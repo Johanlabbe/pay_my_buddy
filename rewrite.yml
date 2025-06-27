@@ -1,0 +1,9 @@
+---
+type: specs.openrewrite.org/v1beta/recipe
+name: com.example.UpgradeToJava21
+displayName: Migrate to Java 21
+description: |
+  Cette recette applique automatiquement les évolutions
+  nécessaires pour passer votre code et vos build files en Java 21.
+recipeList:
+  - org.openrewrite.java.migrate.UpgradeToJava21
