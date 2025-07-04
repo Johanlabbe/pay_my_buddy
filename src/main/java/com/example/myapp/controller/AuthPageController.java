@@ -39,7 +39,9 @@ public class AuthPageController {
     }
 
     @GetMapping("/login")
-    public String loginForm() {
+    public String loginForm(@RequestParam(required = false) String error,
+                            Model model) {
+        model.addAttribute("error", error);
         return "login";
     }
 
