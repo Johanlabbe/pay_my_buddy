@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report-3.0.xsd" version="3.0" name="com.example.myapp.service.TransactionServiceImplTest" time="0.168" tests="6" errors="0" skipped="0" failures="0">
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report-3.0.xsd" version="3.0" name="com.example.myapp.service.BillingServiceImplTest" time="1.1" tests="3" errors="0" skipped="0" failures="0">
   <properties>
     <property name="java.specification.version" value="21"/>
     <property name="sun.cpu.isalist" value="amd64"/>
@@ -58,10 +58,13 @@
     <property name="sun.io.unicode.encoding" value="UnicodeLittle"/>
     <property name="java.class.version" value="65.0"/>
   </properties>
-  <testcase name="findByUser_shouldReturnSentAndReceived" classname="com.example.myapp.service.TransactionServiceImplTest" time="0.14"/>
-  <testcase name="create_shouldThrow_whenInsufficientBalance" classname="com.example.myapp.service.TransactionServiceImplTest" time="0.007"/>
-  <testcase name="create_shouldThrow_whenNotConnected" classname="com.example.myapp.service.TransactionServiceImplTest" time="0.003"/>
-  <testcase name="create_shouldPersistTransaction_andUpdateBalances" classname="com.example.myapp.service.TransactionServiceImplTest" time="0.003"/>
-  <testcase name="findByUser_shouldThrow_whenUserNotFound" classname="com.example.myapp.service.TransactionServiceImplTest" time="0.004"/>
-  <testcase name="create_shouldThrow_whenSenderNotFound" classname="com.example.myapp.service.TransactionServiceImplTest" time="0.004"/>
+  <testcase name="issueInvoice_shouldPersist_andReturnDto" classname="com.example.myapp.service.BillingServiceImplTest" time="1.062">
+    <system-err><![CDATA[WARNING: A Java agent has been loaded dynamically (C:\Users\Johan Labbe\.m2\repository\net\bytebuddy\byte-buddy-agent\1.14.10\byte-buddy-agent-1.14.10.jar)
+WARNING: If a serviceability tool is in use, please run with -XX:+EnableDynamicAgentLoading to hide this warning
+WARNING: If a serviceability tool is not in use, please run with -Djdk.instrument.traceUsage for more information
+WARNING: Dynamic loading of agents will be disallowed by default in a future release
+]]></system-err>
+  </testcase>
+  <testcase name="listInvoices_shouldReturnAll" classname="com.example.myapp.service.BillingServiceImplTest" time="0.006"/>
+  <testcase name="markAsPaid_shouldUpdatePaidFlag" classname="com.example.myapp.service.BillingServiceImplTest" time="0.009"/>
 </testsuite>

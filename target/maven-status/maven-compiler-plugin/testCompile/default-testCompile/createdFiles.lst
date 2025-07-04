@@ -1,2 +1,3 @@
 com\example\myapp\service\TransactionServiceImplTest.class
 com\example\myapp\controller\TransactionControllerIT.class
+com\example\myapp\service\BillingServiceImplTest.class
