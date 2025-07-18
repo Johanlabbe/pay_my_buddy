@@ -31,8 +31,8 @@ public class AuthPageController {
     private final AuthSession session;
 
     public AuthPageController(UserService userService,
-                              WebClient api,
-                              AuthSession session) {
+            WebClient api,
+            AuthSession session) {
         this.userService = userService;
         this.api = api;
         this.session = session;
@@ -40,7 +40,7 @@ public class AuthPageController {
 
     @GetMapping("/login")
     public String loginForm(@RequestParam(required = false) String error,
-                            Model model) {
+            Model model) {
         model.addAttribute("error", error);
         return "login";
     }
@@ -53,38 +53,39 @@ public class AuthPageController {
 
     @PostMapping("/register")
     public String register(@ModelAttribute("user") @Valid CreateUserDTO dto,
-                           RedirectAttributes ra) {
+            RedirectAttributes ra) {
         UserDTO created = userService.create(dto);
         ra.addFlashAttribute("msg",
                 "Inscription réussie pour " + created.getUsername() + ". Connectez-vous.");
         return "redirect:/auth/login";
     }
 
-    @PostMapping("/login")
-    public String login(@RequestParam String email,
-                        @RequestParam String password,
-                        RedirectAttributes ra) {
+    // @PostMapping("/login")
+    // public String login(@RequestParam String email,
+    //         @RequestParam String password,
+    //         RedirectAttributes ra) {
 
-        String header = "Basic " + Base64.getEncoder()
-                                         .encodeToString((email + ":" + password)
-                                         .getBytes(StandardCharsets.UTF_8));
+    //     String header = "Basic " + Base64.getEncoder()
+    //             .encodeToString((email + ":" + password)
+    //                     .getBytes(StandardCharsets.UTF_8));
 
-        try {
-            UserDTO me = api.get()
-                            .uri("/users/profile")
-                            .header(HttpHeaders.AUTHORIZATION, header)
-                            .retrieve()
-                            .bodyToMono(UserDTO.class)
-                            .block();
+    //     try {
+    //         UserDTO me = api.get()
+    //                 .uri("/users/profile")
+    //                 .header(HttpHeaders.AUTHORIZATION, header)
+    //                 .retrieve()
+    //                 .bodyToMono(UserDTO.class)
+    //                 .block();
 
-            session.setAuthHeader(header);
-            session.setUser(me);
-            return "redirect:/dashboard";
-        } catch (ResponseStatusException ex) {
-            ra.addFlashAttribute("error", "Identifiants invalides");
-            return "redirect:/auth/login";
-        }
-    }
+    //         session.setAuthHeader(header);
+    //         session.setUser(me);
+    //         return "redirect:/dashboard";
+
+    //     } catch (org.springframework.web.reactive.function.client.WebClientResponseException ex) {
+    //         ra.addFlashAttribute("error", "Identifiants invalides");
+    //         return "redirect:/auth/login";
+    //     }
+    // }
 
     @PostMapping("/logout")
     public String logout() {

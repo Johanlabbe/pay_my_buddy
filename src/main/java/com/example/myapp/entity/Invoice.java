@@ -10,7 +10,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 
 @Entity
-@Table(name = "invoice")
 public class Invoice {
   @Id 
   @GeneratedValue(strategy = GenerationType.IDENTITY)

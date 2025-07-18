@@ -3,7 +3,6 @@ package com.example.myapp.entity;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "user_connections")
 public class UserConnection {
 
     @EmbeddedId

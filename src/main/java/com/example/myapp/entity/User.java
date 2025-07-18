@@ -5,7 +5,7 @@ import java.math.BigDecimal;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "userdb")
+@Table(name="userdb")
 public class User {
 
     @Id
@@ -26,6 +26,9 @@ public class User {
 
     @Column(nullable = false)
     private BigDecimal balance = BigDecimal.ZERO;
+
+    @Column(nullable = false)
+    private BigDecimal solde = BigDecimal.ZERO;
 
     public User() {
     }
