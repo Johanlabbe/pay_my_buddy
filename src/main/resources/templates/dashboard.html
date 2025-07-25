@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard – PayMyBuddy</title>
+    <link th:href="@{/css/style.css}" rel="stylesheet"/>
+</head>
+<body>
+
+<header>
+    <h1>PayMyBuddy</h1>
+
+    <nav>
+        <a th:href="@{/dashboard}">Accueil</a> |
+        <a th:href="@{/transfer}">Transférer</a> |
+        <a th:href="@{/connections}">Contacts</a> |
+        <a th:href="@{/profile}">Profil</a> |
+        <a th:href="@{/auth/logout}">Déconnexion</a>
+    </nav>
+</header>
+
+<main>
+    <h2>Bienvenue, <span th:text="${username}">Utilisateur</span> !</h2>
+
+    <p>
+        Solde actuel :
+        <strong th:text="${#numbers.formatDecimal(balance, 1, 2)}">0,00</strong> €
+    </p>
+
+    <section>
+        <h3>Actions rapides</h3>
+        <ul>
+            <li><a th:href="@{/transfer}">Faire un transfert</a></li>
+            <li><a th:href="@{/connections}">Ajouter un contact</a></li>
+            <li><a th:href="@{/profile}">Mettre à jour mon profil</a></li>
+        </ul>
+    </section>
+</main>
+
+</body>
+</html>

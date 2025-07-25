@@ -1,6 +1,7 @@
 com\example\myapp\service\BillingServiceImpl.class
 com\example\myapp\dto\TransactionDTO.class
 com\example\myapp\service\MyUserDetailsService.class
+com\example\myapp\controller\DashboardController.class
 com\example\myapp\dto\CreateTransactionDTO.class
 com\example\myapp\dto\InvoiceDto.class
 com\example\myapp\entity\Transaction.class
@@ -32,7 +33,6 @@ com\example\myapp\repository\UserConnectionRepository.class
 com\example\myapp\controller\AuthPageController.class
 com\example\myapp\entity\User.class
 com\example\myapp\entity\UserConnection.class
-com\example\myapp\security_config\SecurityConfig$1.class
 com\example\myapp\controller\UserController.class
 com\example\myapp\dto\ErrorResponse.class
 com\example\myapp\dto\UserDTO.class

@@ -1,4 +1,3 @@
-// src/main/java/com/example/myapp/exception/GlobalExceptionHandler.java
 package com.example.myapp.exception;
 
 import com.example.myapp.dto.ErrorResponse;

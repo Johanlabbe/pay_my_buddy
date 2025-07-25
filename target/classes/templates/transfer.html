@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Transférer – PayMyBuddy</title>
+    <link th:href="@{/css/style.css}" rel="stylesheet"/>
+</head>
+<body>
+
+<header th:replace="~{fragments/header :: nav}"></header>
+
+<main>
+    <h2>Faire un transfert</h2>
+
+    <!-- Solde courant -->
+    <p>Solde : <strong th:text="${#numbers.formatDecimal(currentBalance,1,2)}">0,00</strong> €</p>
+
+    <!-- Messages flash -->
+    <div th:if="${success}" class="alert success" th:text="${success}"></div>
+    <div th:if="${error}" class="alert error" th:text="${error}"></div>
+
+    <!-- Formulaire -->
+    <form th:action="@{/transfer}" th:object="${transactionForm}" method="post">
+        <div>
+            <label for="receiver">Destinataire :</label>
+            <select th:field="*{receiverId}" id="receiver" required>
+                <option th:each="f : ${friends}"
+                        th:value="${f.id}"
+                        th:text="${f.username + ' (' + f.email + ')'}">
+                </option>
+            </select>
+        </div>
+
+        <div>
+            <label for="amount">Montant (€) :</label>
+            <input type="number" step="0.01" min="0.01" th:field="*{amount}" required/>
+        </div>
+
+        <div>
+            <label for="comment">Commentaire (facultatif) :</label>
+            <input type="text" th:field="*{comment}"/>
+        </div>
+
+        <button type="submit">Envoyer</button>
+    </form>
+</main>
+
+</body>
+</html>
