@@ -15,7 +15,6 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 public class TransactionServiceImpl implements TransactionService {
@@ -25,8 +24,8 @@ public class TransactionServiceImpl implements TransactionService {
     private final UserConnectionRepository connectionRepo;
 
     public TransactionServiceImpl(TransactionRepository transactionRepo,
-                                  UserRepository userRepo,
-                                  UserConnectionRepository connectionRepo) {
+            UserRepository userRepo,
+            UserConnectionRepository connectionRepo) {
         this.transactionRepo = transactionRepo;
         this.userRepo = userRepo;
         this.connectionRepo = connectionRepo;
@@ -36,23 +35,46 @@ public class TransactionServiceImpl implements TransactionService {
     @Override
     public List<TransactionDTO> findByUser(Long userId) {
         User user = userRepo.findById(userId)
-            .orElseThrow(() -> new EntityNotFoundException("Utilisateur non trouvé : " + userId));
+                .orElseThrow(() -> new EntityNotFoundException("Utilisateur non trouvé : " + userId));
 
-        List<Transaction> sent     = transactionRepo.findBySender(user);
-        List<Transaction> received = transactionRepo.findByReceiver(user);
+        try {
+            List<Transaction> items = transactionRepo.findBySenderOrReceiverOrderByTimestampDesc(user, user);
+            org.slf4j.LoggerFactory.getLogger(getClass()).debug(
+                    "[TX] listByUser OK via ORderByTimestampDesc | userId={} | rows={}", userId, items.size());
+            return items.stream()
+                    .filter(t -> t != null && t.getSender() != null && t.getReceiver() != null && t.getAmount() != null)
+                    .map(this::toDto)
+                    .collect(java.util.stream.Collectors.toList());
+        } catch (Exception e) {
+            org.slf4j.LoggerFactory.getLogger(getClass()).error(
+                    "[TX] listByUser FAILED via ORderByTimestampDesc | userId={} | cause={}",
+                    userId, e.toString(), e);
 
-        return Stream.concat(sent.stream(), received.stream())
-                     .map(this::toDto)
-                     .collect(Collectors.toList());
+            List<Transaction> sent = transactionRepo.findBySender(user);
+            List<Transaction> received = transactionRepo.findByReceiver(user);
+            List<Transaction> merged = java.util.stream.Stream.concat(sent.stream(), received.stream())
+                    .sorted(java.util.Comparator.comparing(Transaction::getTimestamp,
+                            java.util.Comparator.nullsLast(java.util.Comparator.naturalOrder())).reversed())
+                    .toList();
+
+            org.slf4j.LoggerFactory.getLogger(getClass()).debug(
+                    "[TX] listByUser FALLBACK | sent={} received={} merged={}",
+                    sent.size(), received.size(), merged.size());
+
+            return merged.stream()
+                    .filter(t -> t != null && t.getSender() != null && t.getReceiver() != null && t.getAmount() != null)
+                    .map(this::toDto)
+                    .collect(java.util.stream.Collectors.toList());
+        }
     }
 
     @Transactional
     @Override
     public TransactionDTO create(Long senderId, CreateTransactionDTO dto) {
         User sender = userRepo.findById(senderId)
-            .orElseThrow(() -> new EntityNotFoundException("Expéditeur non trouvé : " + senderId));
+                .orElseThrow(() -> new EntityNotFoundException("Expéditeur non trouvé : " + senderId));
         User receiver = userRepo.findById(dto.getReceiverId())
-            .orElseThrow(() -> new EntityNotFoundException("Destinataire non trouvé : " + dto.getReceiverId()));
+                .orElseThrow(() -> new EntityNotFoundException("Destinataire non trouvé : " + dto.getReceiverId()));
 
         boolean connected = connectionRepo.existsByUserAndConnection(sender, receiver);
         if (!connected) {
@@ -80,11 +102,19 @@ public class TransactionServiceImpl implements TransactionService {
         return toDto(saved);
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public List<Transaction> listForUser(Long userId) {
+        User me = userRepo.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("Utilisateur introuvable : " + userId));
+        return transactionRepo.findBySenderOrReceiverOrderByTimestampDesc(me, me);
+    }
+
     private TransactionDTO toDto(Transaction t) {
         TransactionDTO dto = new TransactionDTO();
         dto.setId(t.getId());
-        dto.setSenderId(t.getSender().getId());
-        dto.setReceiverId(t.getReceiver().getId());
+        dto.setSenderId(t.getSender() != null ? t.getSender().getId() : null);
+        dto.setReceiverId(t.getReceiver() != null ? t.getReceiver().getId() : null);
         dto.setAmount(t.getAmount());
         dto.setDescription(t.getDescription());
         dto.setTimestamp(t.getTimestamp());

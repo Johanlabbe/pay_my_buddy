@@ -1,50 +1,79 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="fr">
+
 <head>
   <meta charset="UTF-8">
-  <title>Transférer – Pay My Buddy</title>
-  <link rel="stylesheet" th:href="@{/css/style.css}"/>
+  <title>Transférer – Pay My Buddy</title>
+  <link rel="stylesheet" th:href="@{/css/style.css}" />
 </head>
+
 <body>
 
   <div th:insert="fragments/header :: navbar"></div>
 
   <main class="page-content">
     <h2>Faire un transfert</h2>
-    <p>Solde : <strong th:text="${#numbers.formatDecimal(currentBalance,1,2)} + ' €'">0,00 €</strong></p>
+
+    <p>
+      Solde :
+      <strong th:text="${#numbers.formatDecimal(currentBalance, 1, 2)} + ' €'"></strong>
+    </p>
 
     <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
-    <div th:if="${error}"   class="alert alert-error"   th:text="${error}"></div>
+    <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
 
     <form th:action="@{/transfer}" th:object="${transactionForm}" method="post" class="form-inline">
       <select th:field="*{receiverId}" required>
         <option value="" disabled selected>Sélectionner une relation</option>
-        <option th:each="f : ${friends}"
-                th:value="${f.id}"
-                th:text="${f.username + ' (' + f.email + ')'}">
+        <option th:each="f : ${friends}" th:value="${f.id}" th:text="${f.username + ' (' + f.email + ')' }">
         </option>
       </select>
-      <input type="text"    th:field="*{description}" placeholder="Description (facultatif)"/>
-      <input type="number"  th:field="*{amount}"      placeholder="Montant (€)" min="0.01" step="0.01" required/>
+
+      <input type="text" th:field="*{description}" placeholder="Description (facultatif)" />
+      <input type="number" th:field="*{amount}" placeholder="Montant (€)" min="0.01" step="0.01" required />
+
       <button type="submit" class="btn-primary">Payer</button>
+
+      <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
     </form>
 
-    <div class="transactions-table">
+    <div class="transactions-table" style="margin-top: 16px;">
       <table>
         <thead>
           <tr>
-            <th>Relations</th>
+            <th>Date</th>
+            <th>Relation</th>
             <th>Description</th>
-            <th>Montant</th>
+            <th class="text-right">Montant</th>
           </tr>
         </thead>
         <tbody>
           <tr th:each="t : ${transactions}">
-            <td th:text="${t.relationName}">Nom</td>
-            <td th:text="${t.description}">Libellé</td>
-            <td th:text="${t.amount} + ' €'">0,00 €</td>
+            <td class="nowrap"
+              th:text="${t.timestamp != null ? #temporals.format(t.timestamp, 'dd/MM/yyyy HH:mm') : '—'}">
+            </td>
+
+            <td th:text="${t.senderId == currentUserId ? 'Envoyé à #' + t.receiverId : 'Reçu de #' + t.senderId}">
+            </td>
+
+            <td>
+              <span th:if="${t.description != null and !#strings.isEmpty(t.description)}"
+                th:text="${t.description}">Libellé</span>
+              <span th:if="${t.description == null or #strings.isEmpty(t.description)}">—</span>
+            </td>
+
+            <td class="text-right" th:classappend="${t.senderId == currentUserId} ? ' amount-out' : ' amount-in'"
+              th:text="${t.senderId == currentUserId
+                   ? '-' + #numbers.formatDecimal(t.amount, 1, 2) + ' €'
+                   : '+' + #numbers.formatDecimal(t.amount, 1, 2) + ' €'}">
+            </td>
+          </tr>
+
+          <tr th:if="${#lists.isEmpty(transactions)}">
+            <td colspan="4">Aucune transaction pour le moment.</td>
           </tr>
         </tbody>
+
       </table>
     </div>
   </main>
@@ -52,4 +81,5 @@
   <div th:insert="fragments/footer :: foot"></div>
 
 </body>
+
 </html>

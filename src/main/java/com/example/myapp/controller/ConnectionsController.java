@@ -1,22 +1,23 @@
 package com.example.myapp.controller;
 
-import java.util.List;
-
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import org.springframework.security.core.Authentication;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-
+import com.example.myapp.dto.AddConnectionForm;
 import com.example.myapp.dto.ConnectionDTO;
+import com.example.myapp.dto.UserDTO;
 import com.example.myapp.entity.User;
 import com.example.myapp.service.ConnectionService;
 import com.example.myapp.service.UserService;
+import jakarta.validation.Valid;
+import org.springframework.security.core.Authentication;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/connections")
@@ -31,64 +32,68 @@ public class ConnectionsController {
         this.userService = userService;
     }
 
+    /* -------- Afficher la page Contacts -------- */
     @GetMapping
-    public String getConnections(Model model, Authentication authentication,
-                                 @RequestParam(value = "msg", required = false) String msg,
-                                 @RequestParam(value = "err", required = false) String err) {
-
+    public String getConnections(Model model, Authentication authentication) {
         User current = userService.getCurrentUser(authentication);
 
-        // 🔁 utilise bien le contrat: List<ConnectionDTO>
-        List<ConnectionDTO> connections = connectionService.getConnections(current.getId());
+        List<ConnectionDTO> links = connectionService.getConnections(current.getId());
+        List<UserDTO> friends = links.stream()
+                .map(link -> {
+                    try {
+                        return userService.findById(link.getFriendId());
+                    } catch (Exception e) {
+                        return null;
+                    }
+                })
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
 
-        model.addAttribute("connections", connections);
-        model.addAttribute("addEmail", "");
-        model.addAttribute("message", msg);
-        model.addAttribute("error", err);
-        return "connections/index";
+        model.addAttribute("connections", friends);
+
+        if (!model.containsAttribute("connectionForm")) {
+            model.addAttribute("connectionForm", new AddConnectionForm());
+        }
+
+        return "connections";
     }
 
-    @PostMapping("/add")
-    public String addConnection(Authentication authentication,
-                                @RequestParam("email")
-                                @NotBlank @Email String email) {
+    /* -------- Ajouter un contact (POST /connections) -------- */
+    @PostMapping
+    public String addConnection(@Valid @ModelAttribute("connectionForm") AddConnectionForm form,
+                                BindingResult binding,
+                                Authentication authentication,
+                                RedirectAttributes redirect) {
+        if (binding.hasErrors()) {
+            redirect.addFlashAttribute("org.springframework.validation.BindingResult.connectionForm", binding);
+            redirect.addFlashAttribute("connectionForm", form);
+            return "redirect:/connections";
+        }
+
         User current = userService.getCurrentUser(authentication);
         try {
-            // Résoudre l'email en friendId
-            Long friendId = userService.findByEmail(email).getId();
-
-            // Appel conforme au service
+            Long friendId = userService.findByEmail(form.getEmail()).getId();
             connectionService.add(new ConnectionDTO(current.getId(), friendId));
-
-            return "redirect:/connections?msg=Contact%20ajout%C3%A9";
-        } catch (IllegalArgumentException | jakarta.persistence.EntityNotFoundException ex) {
-            return "redirect:/connections?err=" + urlEncode(ex.getMessage());
+            redirect.addFlashAttribute("message", "Contact ajouté.");
         } catch (Exception ex) {
-            return "redirect:/connections?err=Unable%20to%20add%20contact";
+            redirect.addFlashAttribute("error", ex.getMessage());
+            redirect.addFlashAttribute("connectionForm", form);
         }
+        return "redirect:/connections";
     }
 
+    /* -------- Suppression d'un contact -------- */
     @PostMapping("/remove")
-    public String removeConnection(Authentication authentication,
-                                   @RequestParam("friendId") Long friendId) {
+    public String removeConnection(@RequestParam("friendId") Long friendId,
+                                   Authentication authentication,
+                                   RedirectAttributes redirect) {
         User current = userService.getCurrentUser(authentication);
         try {
-            // Appel conforme au service
             connectionService.remove(current.getId(), friendId);
-
-            return "redirect:/connections?msg=Contact%20supprim%C3%A9";
-        } catch (IllegalArgumentException | jakarta.persistence.EntityNotFoundException ex) {
-            return "redirect:/connections?err=" + urlEncode(ex.getMessage());
+            redirect.addFlashAttribute("message", "Contact supprimé.");
         } catch (Exception ex) {
-            return "redirect:/connections?err=Unable%20to%20remove%20contact";
+            redirect.addFlashAttribute("error", ex.getMessage());
         }
-    }
-
-    private String urlEncode(String s) {
-        try {
-            return java.net.URLEncoder.encode(s, java.nio.charset.StandardCharsets.UTF_8);
-        } catch (Exception e) {
-            return "error";
-        }
+        return "redirect:/connections";
     }
 }

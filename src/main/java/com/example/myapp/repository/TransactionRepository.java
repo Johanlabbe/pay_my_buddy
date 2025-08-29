@@ -16,4 +16,5 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
 
     Page<Transaction> findBySenderIdOrReceiverId(Long senderId, Long receiverId, Pageable pageable);
 
+    List<Transaction> findBySenderOrReceiverOrderByTimestampDesc(User sender, User receiver);
 }

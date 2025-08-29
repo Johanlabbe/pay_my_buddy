@@ -14,7 +14,7 @@
       <ul>
         <li><a th:href="@{/dashboard}" th:classappend="${#httpServletRequest.requestURI=='/dashboard'}? 'active'">Accueil</a></li>
         <li><a th:href="@{/transfer}"   th:classappend="${#httpServletRequest.requestURI=='/transfer'}? 'active'">Transférer</a></li>
-        <li><a th:href="@{/connections}" th:classappend="${#httpServletRequest.requestURI=='/connections'}? 'active'">Contacts</a></li>
+        <li><a th:href="@{/connections}" th:classappend="${#httpServletRequest.requestURI=='/connections'}? 'active'">Relations</a></li>
         <li><a th:href="@{/profile}"    th:classappend="${#httpServletRequest.requestURI=='/profile'}? 'active'">Profil</a></li>
         <li>
           <form th:action="@{/auth/logout}" method="post">

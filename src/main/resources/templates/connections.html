@@ -1,22 +1,27 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="fr">
+
 <head>
   <meta charset="UTF-8">
-  <title>Contacts – Pay My Buddy</title>
-  <link rel="stylesheet" th:href="@{/css/style.css}"/>
+  <title>Relations – Pay My Buddy</title>
+  <link rel="stylesheet" th:href="@{/css/style.css}" />
 </head>
+
 <body>
 
   <div th:insert="fragments/header :: navbar"></div>
 
   <main class="page-content">
+    <p role="status" th:if="${message}" th:text="${message}" style="color: green"></p>
+    <p role="alert" th:if="${error}" th:text="${error}" style="color: red"></p>
+    
     <form th:action="@{/connections}" th:object="${connectionForm}" method="post" class="form-inline">
-      <input type="email" th:field="*{email}" placeholder="Saisir une adresse mail" required/>
+      <input type="email" th:field="*{email}" placeholder="Saisir une adresse mail" required />
       <button type="submit" class="btn-secondary">Ajouter</button>
     </form>
 
     <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
-    <div th:if="${error}"   class="alert alert-error"   th:text="${error}"></div>
+    <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
 
     <div class="transactions-table">
       <table>
@@ -39,4 +44,5 @@
   <div th:insert="fragments/footer :: foot"></div>
 
 </body>
+
 </html>
