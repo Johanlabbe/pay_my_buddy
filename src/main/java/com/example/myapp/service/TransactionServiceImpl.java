@@ -68,7 +68,7 @@ public class TransactionServiceImpl implements TransactionService {
         tx.setSender(sender);
         tx.setReceiver(receiver);
         tx.setAmount(amount);
-        tx.setComment(dto.getComment());
+        tx.setDescription(dto.getDescription());
         tx.setTimestamp(LocalDateTime.now());
         Transaction saved = transactionRepo.save(tx);
 
@@ -86,7 +86,7 @@ public class TransactionServiceImpl implements TransactionService {
         dto.setSenderId(t.getSender().getId());
         dto.setReceiverId(t.getReceiver().getId());
         dto.setAmount(t.getAmount());
-        dto.setComment(t.getComment());
+        dto.setDescription(t.getDescription());
         dto.setTimestamp(t.getTimestamp());
         return dto;
     }

@@ -31,7 +31,7 @@ CREATE TABLE user_connection (
 
 CREATE TABLE transaction (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    description VARCHAR(255) NOT NULL,
+    description VARCHAR(255) NULL,
     amount DECIMAL(15, 2) NOT NULL CHECK (amount > 0),
     sender_id BIGINT NOT NULL,
     receiver_id BIGINT NOT NULL,

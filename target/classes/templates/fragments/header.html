@@ -1,16 +1,19 @@
-<!-- templates/fragments/header.html -->
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-    <body>
-        <nav th:fragment="nav">
-            <h1>PayMyBuddy</h1>
-            <ul class="navbar">
-                <li><a th:href="@{/dashboard}">Accueil</a></li>
-                <li><a th:href="@{/transfer}">Transférer</a></li>
-                <li><a th:href="@{/connections}">Contacts</a></li>
-                <li><a th:href="@{/profile}">Profil</a></li>
-                <li><a th:href="@{/auth/logout}">Déconnexion</a></li>
-            </ul>
-        </nav>
-    </body>
+<body th:fragment="navbar">
+  <nav class="main-nav">
+    <div class="logo-text">Pay My Buddy</div>
+    <ul>
+      <li><a th:href="@{/dashboard}">Accueil</a></li>
+      <li><a th:href="@{/transfer}">Transférer</a></li>
+      <li><a th:href="@{/connections}">Contacts</a></li>
+      <li><a th:href="@{/profile}">Profil</a></li>
+      <li>
+        <form th:action="@{/auth/logout}" method="post">
+          <button type="submit" class="logout">Déconnexion</button>
+        </form>
+      </li>
+    </ul>
+  </nav>
+</body>
 </html>

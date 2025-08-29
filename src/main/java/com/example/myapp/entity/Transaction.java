@@ -22,7 +22,8 @@ public class Transaction {
     @Column(nullable = false)
     private BigDecimal amount;
 
-    private String comment;
+    @Column(name = "description", nullable = true)
+    private String description;
 
     @Column(nullable = false)
     private LocalDateTime timestamp;
@@ -33,12 +34,12 @@ public class Transaction {
     public Transaction(User sender,
             User receiver,
             BigDecimal amount,
-            String comment,
+            String description,
             LocalDateTime timestamp) {
         this.sender = sender;
         this.receiver = receiver;
         this.amount = amount;
-        this.comment = comment;
+        this.description = description;
         this.timestamp = timestamp;
     }
 
@@ -74,12 +75,12 @@ public class Transaction {
         this.amount = amount;
     }
 
-    public String getComment() {
-        return comment;
+    public String getDescription() {
+        return description;
     }
 
-    public void setComment(String comment) {
-        this.comment = comment;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public LocalDateTime getTimestamp() {

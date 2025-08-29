@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Contacts – Pay My Buddy</title>
+  <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+
+  <div th:insert="fragments/header :: navbar"></div>
+
+  <main class="page-content">
+    <form th:action="@{/connections}" th:object="${connectionForm}" method="post" class="form-inline">
+      <input type="email" th:field="*{email}" placeholder="Saisir une adresse mail" required/>
+      <button type="submit" class="btn-secondary">Ajouter</button>
+    </form>
+
+    <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+    <div th:if="${error}"   class="alert alert-error"   th:text="${error}"></div>
+
+    <div class="transactions-table">
+      <table>
+        <thead>
+          <tr>
+            <th>Username</th>
+            <th>Mail</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr th:each="c : ${connections}">
+            <td th:text="${c.username}">Nom</td>
+            <td th:text="${c.email}">email@exemple.com</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
+
+  <div th:insert="fragments/footer :: foot"></div>
+
+</body>
+</html>

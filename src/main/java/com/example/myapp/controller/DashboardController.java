@@ -1,36 +1,29 @@
 package com.example.myapp.controller;
 
+import java.security.Principal;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
 import com.example.myapp.entity.User;
-import com.example.myapp.repository.UserRepository;
+import com.example.myapp.service.UserService;
 
-import java.security.Principal;
 
 @Controller
 public class DashboardController {
 
-    private final UserRepository userRepository;
+    private final UserService userService;
 
-    public DashboardController(UserRepository userRepository) {
-        this.userRepository = userRepository;
+    public DashboardController(UserService userService) {
+        this.userService = userService;
     }
 
-    /**
-     * Affiche le tableau de bord principal après connexion.
-     * URL : GET /dashboard  (voir redirection dans SecurityConfig)
-     */
-    @GetMapping("/dashboard")
-    public String dashboard(Principal principal, Model model) {
-        // Récupère l'utilisateur courant grâce à son email (principal.getName())
-        User user = userRepository.findByEmail(principal.getName())
-                .orElseThrow(() -> new IllegalStateException("Utilisateur courant introuvable"));
-
+    @GetMapping({"/", "/dashboard"})
+    public String dashboard(Model model, Principal principal) {
+        User user = userService.findByEmail(principal.getName());
         model.addAttribute("username", user.getUsername());
         model.addAttribute("balance", user.getBalance());
-
-        return "dashboard";  // templates/dashboard.html
+        return "dashboard";
     }
 }

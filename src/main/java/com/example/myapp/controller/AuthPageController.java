@@ -6,6 +6,7 @@ import java.util.Base64;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,6 +21,7 @@ import com.example.myapp.dto.UserDTO;
 import com.example.myapp.service.UserService;
 import com.example.myapp.session.AuthSession;
 
+import jakarta.persistence.EntityExistsException;
 import jakarta.validation.Valid;
 
 @Controller
@@ -39,57 +41,31 @@ public class AuthPageController {
     }
 
     @GetMapping("/login")
-    public String loginForm(@RequestParam(required = false) String error,
-            Model model) {
-        model.addAttribute("error", error);
+    public String loginPage() {
         return "login";
     }
 
     @GetMapping("/register")
-    public String registerForm(Model m) {
-        m.addAttribute("user", new CreateUserDTO());
+    public String registerPage(Model model) {
+        model.addAttribute("userForm", new CreateUserDTO());
         return "register";
     }
 
     @PostMapping("/register")
-    public String register(@ModelAttribute("user") @Valid CreateUserDTO dto,
+    public String doRegister(
+            @Valid CreateUserDTO userForm,
+            BindingResult br,
             RedirectAttributes ra) {
-        UserDTO created = userService.create(dto);
-        ra.addFlashAttribute("msg",
-                "Inscription réussie pour " + created.getUsername() + ". Connectez-vous.");
-        return "redirect:/auth/login";
-    }
-
-    // @PostMapping("/login")
-    // public String login(@RequestParam String email,
-    //         @RequestParam String password,
-    //         RedirectAttributes ra) {
-
-    //     String header = "Basic " + Base64.getEncoder()
-    //             .encodeToString((email + ":" + password)
-    //                     .getBytes(StandardCharsets.UTF_8));
-
-    //     try {
-    //         UserDTO me = api.get()
-    //                 .uri("/users/profile")
-    //                 .header(HttpHeaders.AUTHORIZATION, header)
-    //                 .retrieve()
-    //                 .bodyToMono(UserDTO.class)
-    //                 .block();
-
-    //         session.setAuthHeader(header);
-    //         session.setUser(me);
-    //         return "redirect:/dashboard";
-
-    //     } catch (org.springframework.web.reactive.function.client.WebClientResponseException ex) {
-    //         ra.addFlashAttribute("error", "Identifiants invalides");
-    //         return "redirect:/auth/login";
-    //     }
-    // }
-
-    @PostMapping("/logout")
-    public String logout() {
-        session.clear();
-        return "redirect:/auth/login";
+        if (br.hasErrors()) {
+            return "register";
+        }
+        try {
+            userService.create(userForm);
+            ra.addFlashAttribute("success", "Inscription réussie, veuillez vous connecter.");
+            return "redirect:/auth/login";
+        } catch (Exception e) {
+            ra.addFlashAttribute("error", e.getMessage());
+            return "redirect:/auth/register";
+        }
     }
 }

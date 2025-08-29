@@ -75,7 +75,7 @@ class TransactionControllerIT {
         CreateTransactionDTO dto = new CreateTransactionDTO();
         dto.setReceiverId(receiver.getId());
         dto.setAmount(new BigDecimal("20.00"));
-        dto.setComment("Test IT");
+        dto.setDescription("Test IT");
 
         mockMvc.perform(post("/api/users/{userId}/transactions", sender.getId())
                 .contentType(MediaType.APPLICATION_JSON)
@@ -85,7 +85,7 @@ class TransactionControllerIT {
                 .andExpect(jsonPath("$.senderId").value(sender.getId()))
                 .andExpect(jsonPath("$.receiverId").value(receiver.getId()))
                 .andExpect(jsonPath("$.amount").value(20.00))
-                .andExpect(jsonPath("$.comment").value("Test IT"));
+                .andExpect(jsonPath("$.description").value("Test IT"));
 
         User refreshedSender = userRepo.findById(sender.getId()).orElseThrow();
         User refreshedReceiver = userRepo.findById(receiver.getId()).orElseThrow();

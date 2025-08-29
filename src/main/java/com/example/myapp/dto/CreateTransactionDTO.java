@@ -10,7 +10,7 @@ public class CreateTransactionDTO {
     private Long receiverId;
     @NotNull @DecimalMin("0.01")
     private BigDecimal amount;
-    private String comment;
+    private String description;
     public Long getReceiverId() {
         return receiverId;
     }
@@ -23,10 +23,10 @@ public class CreateTransactionDTO {
     public void setAmount(BigDecimal amount) {
         this.amount = amount;
     }
-    public String getComment() {
-        return comment;
+    public String getDescription() {
+        return description;
     }
-    public void setComment(String comment) {
-        this.comment = comment;
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

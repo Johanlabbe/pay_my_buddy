@@ -66,7 +66,6 @@ public class TransferController {
                                RedirectAttributes redirect) {
 
         if (binding.hasErrors()) {
-            /* On renvoie les erreurs de validation standard */
             redirect.addFlashAttribute("org.springframework.validation.BindingResult.transactionForm", binding);
             redirect.addFlashAttribute("transactionForm", form);
             return "redirect:/transfer";

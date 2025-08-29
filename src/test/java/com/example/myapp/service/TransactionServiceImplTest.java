@@ -100,14 +100,14 @@ class TransactionServiceImplTest {
         CreateTransactionDTO dto = new CreateTransactionDTO();
         dto.setReceiverId(2L);
         dto.setAmount(new BigDecimal("20.00"));
-        dto.setComment("Pour toi");
+        dto.setDescription("Pour toi");
 
         Transaction savedTx = new Transaction();
         savedTx.setId(100L);
         savedTx.setSender(sender);
         savedTx.setReceiver(receiver);
         savedTx.setAmount(dto.getAmount());
-        savedTx.setComment(dto.getComment());
+        savedTx.setDescription(dto.getDescription());
         savedTx.setTimestamp(LocalDateTime.now());
         when(txRepo.save(any(Transaction.class))).thenReturn(savedTx);
 

@@ -3,23 +3,33 @@
 <head>
   <meta charset="UTF-8">
   <title th:replace="~{::title}">Pay My Buddy</title>
-  <link rel="stylesheet" th:href="@{/css/main.css}">
+  <link rel="stylesheet" th:href="@{/css/style.css}"/>
 </head>
 <body>
-<header>
-  <h1>Pay My Buddy</h1>
-  <nav>
-    <a th:href="@{/dashboard}">Tableau de bord</a>
-    <form th:action="@{/auth/logout}" method="post" style="display:inline">
-      <button type="submit">Déconnexion</button>
-    </form>
-  </nav>
-</header>
 
-<main>
-  <div th:replace="~{::body}"></div>
-</main>
+  <!-- Barre de navigation -->
+  <header>
+    <nav class="main-nav">
+      <div class="logo-text">Pay My Buddy</div>
+      <ul>
+        <li><a th:href="@{/dashboard}" th:classappend="${#httpServletRequest.requestURI=='/dashboard'}? 'active'">Accueil</a></li>
+        <li><a th:href="@{/transfer}"   th:classappend="${#httpServletRequest.requestURI=='/transfer'}? 'active'">Transférer</a></li>
+        <li><a th:href="@{/connections}" th:classappend="${#httpServletRequest.requestURI=='/connections'}? 'active'">Contacts</a></li>
+        <li><a th:href="@{/profile}"    th:classappend="${#httpServletRequest.requestURI=='/profile'}? 'active'">Profil</a></li>
+        <li>
+          <form th:action="@{/auth/logout}" method="post">
+            <button type="submit" class="logout">Déconnexion</button>
+          </form>
+        </li>
+      </ul>
+    </nav>
+  </header>
 
-<footer>© 2025 Pay My Buddy</footer>
+  <!-- Contenu spécifique à chaque page -->
+  <main class="page-content">
+    <div th:replace="~{::body}"></div>
+  </main>
+
+  <footer>© 2025 Pay My Buddy</footer>
 </body>
 </html>
