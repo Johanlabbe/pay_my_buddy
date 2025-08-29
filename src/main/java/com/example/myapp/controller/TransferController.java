@@ -16,6 +16,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.security.Principal;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Controller
@@ -26,8 +27,8 @@ public class TransferController {
     private final TransactionService transactionService;
 
     public TransferController(UserRepository userRepository,
-                              ConnectionService connectionService,
-                              TransactionService transactionService) {
+            ConnectionService connectionService,
+            TransactionService transactionService) {
         this.userRepository = userRepository;
         this.connectionService = connectionService;
         this.transactionService = transactionService;
@@ -40,11 +41,11 @@ public class TransferController {
         User current = userRepository.findByEmail(principal.getName())
                 .orElseThrow();
 
-        /* Liste d’amis (User) à afficher dans le <select> */
+        /* Liste d’amis (User) à afficher dans le <select>) */
         List<User> friends = connectionService.getConnections(current.getId())
                 .stream()
-                .map(conn -> userRepository.findById(conn.getConnectionId()).orElse(null))
-                .filter(u -> u != null)
+                .map(conn -> userRepository.findById(conn.getFriendId()).orElse(null)) // <-- friendId
+                .filter(Objects::nonNull)
                 .collect(Collectors.toList());
 
         model.addAttribute("friends", friends);
@@ -61,9 +62,9 @@ public class TransferController {
 
     @PostMapping("/transfer")
     public String makeTransfer(@Valid @ModelAttribute("transactionForm") CreateTransactionDTO form,
-                               BindingResult binding,
-                               Principal principal,
-                               RedirectAttributes redirect) {
+            BindingResult binding,
+            Principal principal,
+            RedirectAttributes redirect) {
 
         if (binding.hasErrors()) {
             redirect.addFlashAttribute("org.springframework.validation.BindingResult.transactionForm", binding);
