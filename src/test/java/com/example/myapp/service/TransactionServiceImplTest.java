@@ -19,23 +19,32 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class TransactionServiceImplTest {
 
-    @Mock private TransactionRepository txRepo;
-    @Mock private UserRepository userRepo;
-    @Mock private UserConnectionRepository connRepo;
-    @InjectMocks private TransactionServiceImpl service;
+    @Mock
+    private TransactionRepository txRepo;
+    @Mock
+    private UserRepository userRepo;
+    @Mock
+    private UserConnectionRepository connRepo;
+    @InjectMocks
+    private TransactionServiceImpl service;
 
     private User sender;
     private User receiver;
 
     @BeforeEach
     void setUp() {
-        sender   = new User(); sender.setId(1L); sender.setBalance(new BigDecimal("100.00"));
-        receiver = new User(); receiver.setId(2L); receiver.setBalance(new BigDecimal("50.00"));
+        sender = new User();
+        sender.setId(1L);
+        sender.setBalance(new BigDecimal("100.00"));
+        receiver = new User();
+        receiver.setId(2L);
+        receiver.setBalance(new BigDecimal("50.00"));
     }
 
     @Test
@@ -50,12 +59,26 @@ class TransactionServiceImplTest {
     @Test
     void findByUser_shouldReturnSentAndReceived() {
         when(userRepo.findById(1L)).thenReturn(Optional.of(sender));
-        Transaction t1 = new Transaction(); t1.setId(10L); t1.setSender(sender); t1.setReceiver(receiver);
-        Transaction t2 = new Transaction(); t2.setId(11L); t2.setSender(receiver); t2.setReceiver(sender);
-        when(txRepo.findBySender(sender)).thenReturn(List.of(t1));
-        when(txRepo.findByReceiver(sender)).thenReturn(List.of(t2));
 
-        List<TransactionDTO> result = service.findByUser(1L);
+        Transaction t1 = new Transaction();
+        t1.setId(10L);
+        t1.setSender(sender);
+        t1.setReceiver(receiver);
+        t1.setAmount(new BigDecimal("100.00"));
+        t1.setTimestamp(LocalDateTime.now());
+
+        Transaction t2 = new Transaction();
+        t2.setId(11L);
+        t2.setSender(receiver);
+        t2.setReceiver(sender);
+        t2.setAmount(new BigDecimal("50.00"));
+        t2.setTimestamp(LocalDateTime.now().minusMinutes(1));
+
+        when(txRepo.findBySenderOrReceiverOrderByTimestampDesc(sender, sender))
+                .thenReturn(java.util.List.of(t1, t2));
+
+        var result = service.findByUser(1L);
+
         assertEquals(2, result.size());
         assertTrue(result.stream().anyMatch(d -> d.getId().equals(10L)));
         assertTrue(result.stream().anyMatch(d -> d.getId().equals(11L)));
@@ -64,7 +87,9 @@ class TransactionServiceImplTest {
     @Test
     void create_shouldThrow_whenSenderNotFound() {
         when(userRepo.findById(1L)).thenReturn(Optional.empty());
-        CreateTransactionDTO dto = new CreateTransactionDTO(); dto.setReceiverId(2L); dto.setAmount(new BigDecimal("10"));
+        CreateTransactionDTO dto = new CreateTransactionDTO();
+        dto.setReceiverId(2L);
+        dto.setAmount(new BigDecimal("10"));
 
         assertThrows(EntityNotFoundException.class, () -> service.create(1L, dto));
     }
@@ -75,7 +100,9 @@ class TransactionServiceImplTest {
         when(userRepo.findById(2L)).thenReturn(Optional.of(receiver));
         when(connRepo.existsByUserAndConnection(sender, receiver)).thenReturn(false);
 
-        CreateTransactionDTO dto = new CreateTransactionDTO(); dto.setReceiverId(2L); dto.setAmount(new BigDecimal("10"));
+        CreateTransactionDTO dto = new CreateTransactionDTO();
+        dto.setReceiverId(2L);
+        dto.setAmount(new BigDecimal("10"));
         IllegalStateException ex = assertThrows(IllegalStateException.class, () -> service.create(1L, dto));
         assertEquals("Aucune connexion entre les utilisateurs", ex.getMessage());
     }
@@ -86,7 +113,9 @@ class TransactionServiceImplTest {
         when(userRepo.findById(2L)).thenReturn(Optional.of(receiver));
         when(connRepo.existsByUserAndConnection(sender, receiver)).thenReturn(true);
 
-        CreateTransactionDTO dto = new CreateTransactionDTO(); dto.setReceiverId(2L); dto.setAmount(new BigDecimal("150"));
+        CreateTransactionDTO dto = new CreateTransactionDTO();
+        dto.setReceiverId(2L);
+        dto.setAmount(new BigDecimal("150"));
         IllegalStateException ex = assertThrows(IllegalStateException.class, () -> service.create(1L, dto));
         assertEquals("Solde insuffisant", ex.getMessage());
     }

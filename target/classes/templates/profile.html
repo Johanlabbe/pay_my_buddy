@@ -7,7 +7,7 @@
 </head>
 <body>
 
-  <div th:insert="fragments/header :: navbar"></div>
+  <div th:insert="~{fragments/header :: navbar('profile')}"></div>
 
   <main class="page-content profile-info">
     <div class="info-item">

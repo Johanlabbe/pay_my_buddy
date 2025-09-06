@@ -9,7 +9,7 @@
 
 <body>
 
-  <div th:insert="fragments/header :: navbar"></div>
+  <div th:insert="~{fragments/header :: navbar('contacts')}"></div>
 
   <main class="page-content">
     <p role="status" th:if="${message}" th:text="${message}" style="color: green"></p>

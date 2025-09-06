@@ -1,6 +1,7 @@
 C:\Users\Johan Labbe\Desktop\workspace\Java\OC\pay_my_buddy\src\main\java\com\example\myapp\service\InvoiceMapper.java
 C:\Users\Johan Labbe\Desktop\workspace\Java\OC\pay_my_buddy\src\main\java\com\example\myapp\service\UserServiceImpl.java
 C:\Users\Johan Labbe\Desktop\workspace\Java\OC\pay_my_buddy\src\main\java\com\example\myapp\entity\Invoice.java
+C:\Users\Johan Labbe\Desktop\workspace\Java\OC\pay_my_buddy\src\main\java\com\example\myapp\controller\TransferController.java
 C:\Users\Johan Labbe\Desktop\workspace\Java\OC\pay_my_buddy\src\main\java\com\example\myapp\entity\User.java
 C:\Users\Johan Labbe\Desktop\workspace\Java\OC\pay_my_buddy\src\main\java\com\example\myapp\controller\TransactionController.java
 C:\Users\Johan Labbe\Desktop\workspace\Java\OC\pay_my_buddy\src\main\java\com\example\myapp\entity\UserConnection.java
@@ -33,6 +34,9 @@ C:\Users\Johan Labbe\Desktop\workspace\Java\OC\pay_my_buddy\src\main\java\com\ex
 C:\Users\Johan Labbe\Desktop\workspace\Java\OC\pay_my_buddy\src\main\java\com\example\myapp\dto\ErrorResponse.java
 C:\Users\Johan Labbe\Desktop\workspace\Java\OC\pay_my_buddy\src\main\java\com\example\myapp\exception\GlobalExceptionHandler.java
 C:\Users\Johan Labbe\Desktop\workspace\Java\OC\pay_my_buddy\src\main\java\com\example\myapp\repository\InvoiceRepository.java
+C:\Users\Johan Labbe\Desktop\workspace\Java\OC\pay_my_buddy\src\main\java\com\example\myapp\controller\ConnectionsController.java
 C:\Users\Johan Labbe\Desktop\workspace\Java\OC\pay_my_buddy\src\main\java\com\example\myapp\session\ApiClientConfig.java
 C:\Users\Johan Labbe\Desktop\workspace\Java\OC\pay_my_buddy\src\main\java\com\example\myapp\dto\InvoiceDto.java
+C:\Users\Johan Labbe\Desktop\workspace\Java\OC\pay_my_buddy\src\main\java\com\example\myapp\dto\AddConnectionForm.java
 C:\Users\Johan Labbe\Desktop\workspace\Java\OC\pay_my_buddy\src\main\java\com\example\myapp\repository\TransactionRepository.java
+C:\Users\Johan Labbe\Desktop\workspace\Java\OC\pay_my_buddy\src\main\java\com\example\myapp\web\GlobalModelAttributes.java

@@ -8,23 +8,31 @@ import com.example.myapp.repository.TransactionRepository;
 import com.example.myapp.repository.UserConnectionRepository;
 import com.example.myapp.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class TransactionServiceImpl implements TransactionService {
+
+    private static final Logger log = LoggerFactory.getLogger(TransactionServiceImpl.class);
 
     private final TransactionRepository transactionRepo;
     private final UserRepository userRepo;
     private final UserConnectionRepository connectionRepo;
 
     public TransactionServiceImpl(TransactionRepository transactionRepo,
-            UserRepository userRepo,
-            UserConnectionRepository connectionRepo) {
+                                  UserRepository userRepo,
+                                  UserConnectionRepository connectionRepo) {
         this.transactionRepo = transactionRepo;
         this.userRepo = userRepo;
         this.connectionRepo = connectionRepo;
@@ -37,33 +45,32 @@ public class TransactionServiceImpl implements TransactionService {
                 .orElseThrow(() -> new EntityNotFoundException("Utilisateur non trouvé : " + userId));
 
         try {
-            List<Transaction> items = transactionRepo.findBySenderOrReceiverOrderByTimestampDesc(user, user);
-            org.slf4j.LoggerFactory.getLogger(getClass()).debug(
-                    "[TX] listByUser OK via ORderByTimestampDesc | userId={} | rows={}", userId, items.size());
+            List<Transaction> items =
+                    transactionRepo.findBySenderOrReceiverOrderByTimestampDesc(user, user);
+            log.debug("[TX] listByUser OK | userId={} | rows={}", userId, items.size());
+
             return items.stream()
-                    .filter(t -> t != null && t.getSender() != null && t.getReceiver() != null && t.getAmount() != null)
+                    .filter(Objects::nonNull)
+                    .filter(t -> t.getSender() != null && t.getReceiver() != null && t.getAmount() != null)
                     .map(this::toDto)
-                    .collect(java.util.stream.Collectors.toList());
-        } catch (Exception e) {
-            org.slf4j.LoggerFactory.getLogger(getClass()).error(
-                    "[TX] listByUser FAILED via ORderByTimestampDesc | userId={} | cause={}",
-                    userId, e.toString(), e);
+                    .collect(Collectors.toList());
+
+        } catch (RuntimeException e) {
+            // Fallback si la méthode du repo n'est pas disponible/nommée différemment
+            log.warn("[TX] listByUser fallback (repo combined query failed) | userId={} | cause={}",
+                    userId, e.toString());
 
             List<Transaction> sent = transactionRepo.findBySender(user);
             List<Transaction> received = transactionRepo.findByReceiver(user);
-            List<Transaction> merged = java.util.stream.Stream.concat(sent.stream(), received.stream())
-                    .sorted(java.util.Comparator.comparing(Transaction::getTimestamp,
-                            java.util.Comparator.nullsLast(java.util.Comparator.naturalOrder())).reversed())
-                    .toList();
 
-            org.slf4j.LoggerFactory.getLogger(getClass()).debug(
-                    "[TX] listByUser FALLBACK | sent={} received={} merged={}",
-                    sent.size(), received.size(), merged.size());
-
-            return merged.stream()
-                    .filter(t -> t != null && t.getSender() != null && t.getReceiver() != null && t.getAmount() != null)
+            return Stream.concat(sent.stream(), received.stream())
+                    .filter(Objects::nonNull)
+                    .sorted(Comparator.comparing(
+                                    Transaction::getTimestamp,
+                                    Comparator.nullsLast(Comparator.naturalOrder()))
+                            .reversed())
                     .map(this::toDto)
-                    .collect(java.util.stream.Collectors.toList());
+                    .collect(Collectors.toList());
         }
     }
 
@@ -75,16 +82,26 @@ public class TransactionServiceImpl implements TransactionService {
         User receiver = userRepo.findById(dto.getReceiverId())
                 .orElseThrow(() -> new EntityNotFoundException("Destinataire non trouvé : " + dto.getReceiverId()));
 
-        boolean connected = connectionRepo.existsByUserAndConnection(sender, receiver);
-        if (!connected) {
+        // Vérifie la connexion
+        if (!connectionRepo.existsByUserAndConnection(sender, receiver)) {
             throw new IllegalStateException("Aucune connexion entre les utilisateurs");
         }
 
+        // Vérifs d'entrée
         BigDecimal amount = dto.getAmount();
-        if (sender.getBalance().compareTo(amount) < 0) {
+        if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new IllegalArgumentException("Montant invalide");
+        }
+
+        // Solde par défaut à ZERO si null
+        BigDecimal senderBalance = sender.getBalance() != null ? sender.getBalance() : BigDecimal.ZERO;
+        BigDecimal receiverBalance = receiver.getBalance() != null ? receiver.getBalance() : BigDecimal.ZERO;
+
+        if (senderBalance.compareTo(amount) < 0) {
             throw new IllegalStateException("Solde insuffisant");
         }
 
+        // Enregistre la transaction
         Transaction tx = new Transaction();
         tx.setSender(sender);
         tx.setReceiver(receiver);
@@ -93,10 +110,13 @@ public class TransactionServiceImpl implements TransactionService {
         tx.setTimestamp(LocalDateTime.now());
         Transaction saved = transactionRepo.save(tx);
 
-        sender.setBalance(sender.getBalance().subtract(amount));
-        receiver.setBalance(receiver.getBalance().add(amount));
+        // Met à jour les soldes
+        sender.setBalance(senderBalance.subtract(amount));
+        receiver.setBalance(receiverBalance.add(amount));
         userRepo.save(sender);
         userRepo.save(receiver);
+
+        log.debug("[TX] create OK | senderId={} -> receiverId={} | amount={}", senderId, dto.getReceiverId(), amount);
 
         return toDto(saved);
     }
