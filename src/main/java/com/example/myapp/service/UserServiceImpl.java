@@ -17,7 +17,7 @@ import java.util.Optional;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder; // BCrypt recommandé
+    private final PasswordEncoder passwordEncoder;
 
     public UserServiceImpl(UserRepository userRepository,
                            PasswordEncoder passwordEncoder) {
@@ -48,16 +48,18 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDTO create(CreateUserDTO dto) {
-        User user = new User();
-        user.setEmail(dto.getEmail());
-        user.setUsername(dto.getUsername());
-
-        String encoded = passwordEncoder.encode(dto.getPassword());
-        user.setPassword(encoded);
-
-        if (user.getRole() == null) {
-            user.setRole("USER");
+        if (userRepository.existsByEmail(dto.getEmail())) {
+            throw new IllegalArgumentException("Cet email est déjà utilisé.");
         }
+        if (userRepository.existsByUsername(dto.getUsername())) {
+            throw new IllegalArgumentException("Ce nom d'utilisateur est déjà utilisé.");
+        }
+
+        User user = new User();
+        user.setEmail(dto.getEmail().trim().toLowerCase());
+        user.setUsername(dto.getUsername().trim());
+        user.setPassword(passwordEncoder.encode(dto.getPassword()));
+        user.setRole("USER");
 
         User saved = userRepository.save(user);
         return UserDTO.fromEntity(saved);

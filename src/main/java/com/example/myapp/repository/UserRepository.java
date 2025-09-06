@@ -11,8 +11,13 @@ import com.example.myapp.entity.User;
 public interface UserRepository extends JpaRepository<User, Long> {
     /**
      * Recherche un utilisateur par son email.
+     * 
      * @param email l'email unique de l'utilisateur
      * @return un Optional contenant l'utilisateur s'il existe, sinon vide
      */
     Optional<User> findByEmail(String email);
+
+    boolean existsByEmail(String email);
+
+    boolean existsByUsername(String username);
 }
