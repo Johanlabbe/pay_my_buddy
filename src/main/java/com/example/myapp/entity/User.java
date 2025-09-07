@@ -37,11 +37,15 @@ public class User {
     private String role;
 
     @Column(name = "solde", precision = 19, scale = 2, nullable = false)
-    private BigDecimal balance = BigDecimal.ZERO;
+    private BigDecimal solde = BigDecimal.ZERO;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 
+    @PrePersist
+    public void prePersist() {
+        if (solde == null) solde = BigDecimal.ZERO;
+    }
 
     public User() { }
 
@@ -50,6 +54,7 @@ public class User {
     public Long getId() {
         return id;
     }
+
     public void setId(Long id) {
         this.id = id;
     }
@@ -57,6 +62,7 @@ public class User {
     public String getEmail() {
         return email;
     }
+
     public void setEmail(String email) {
         this.email = email;
     }
@@ -64,6 +70,7 @@ public class User {
     public String getUsername() {
         return username;
     }
+
     public void setUsername(String username) {
         this.username = username;
     }
@@ -71,6 +78,7 @@ public class User {
     public String getPassword() {
         return password;
     }
+
     public void setPassword(String password) {
         this.password = password;
     }
@@ -78,20 +86,23 @@ public class User {
     public String getRole() {
         return role;
     }
+
     public void setRole(String role) {
         this.role = role;
     }
 
     public BigDecimal getBalance() {
-        return balance;
+        return solde;
     }
-    public void setBalance(BigDecimal balance) {
-        this.balance = balance;
+
+    public void setBalance(BigDecimal solde) {
+        this.solde = solde;
     }
 
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
+
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }

@@ -20,7 +20,7 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
 
     public UserServiceImpl(UserRepository userRepository,
-                           PasswordEncoder passwordEncoder) {
+            PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
     }
@@ -29,7 +29,7 @@ public class UserServiceImpl implements UserService {
     @Transactional(readOnly = true)
     public UserDTO findById(Long id) {
         User user = userRepository.findById(id)
-            .orElseThrow(() -> new NoSuchElementException("Utilisateur introuvable pour l'id : " + id));
+                .orElseThrow(() -> new NoSuchElementException("Utilisateur introuvable pour l'id : " + id));
         return UserDTO.fromEntity(user);
     }
 
@@ -37,7 +37,7 @@ public class UserServiceImpl implements UserService {
     @Transactional(readOnly = true)
     public User findByEmail(String email) {
         return userRepository.findByEmail(email)
-            .orElseThrow(() -> new NoSuchElementException("Utilisateur introuvable pour l'email : " + email));
+                .orElseThrow(() -> new NoSuchElementException("Utilisateur introuvable pour l'email : " + email));
     }
 
     @Override
@@ -48,18 +48,26 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDTO create(CreateUserDTO dto) {
-        if (userRepository.existsByEmail(dto.getEmail())) {
+        final String email = dto.getEmail() == null ? "" : dto.getEmail().trim().toLowerCase();
+        final String username = dto.getUsername() == null ? "" : dto.getUsername().trim();
+        final String rawPassword = dto.getPassword();
+
+        if (email.isEmpty() || username.isEmpty() || rawPassword == null || rawPassword.isBlank()) {
+            throw new IllegalArgumentException("Email, nom d'utilisateur et mot de passe sont obligatoires.");
+        }
+        if (userRepository.existsByEmail(email)) {
             throw new IllegalArgumentException("Cet email est déjà utilisé.");
         }
-        if (userRepository.existsByUsername(dto.getUsername())) {
+        if (userRepository.existsByUsername(username)) {
             throw new IllegalArgumentException("Ce nom d'utilisateur est déjà utilisé.");
         }
 
         User user = new User();
-        user.setEmail(dto.getEmail().trim().toLowerCase());
-        user.setUsername(dto.getUsername().trim());
-        user.setPassword(passwordEncoder.encode(dto.getPassword()));
+        user.setEmail(email);
+        user.setUsername(username);
+        user.setPassword(passwordEncoder.encode(rawPassword));
         user.setRole("USER");
+        user.setBalance(java.math.BigDecimal.ZERO);
 
         User saved = userRepository.save(user);
         return UserDTO.fromEntity(saved);
@@ -68,7 +76,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDTO update(Long userId, CreateUserDTO dto) {
         User user = userRepository.findById(userId)
-            .orElseThrow(() -> new NoSuchElementException("Utilisateur introuvable pour l'id : " + userId));
+                .orElseThrow(() -> new NoSuchElementException("Utilisateur introuvable pour l'id : " + userId));
 
         user.setUsername(dto.getUsername());
 
@@ -96,6 +104,6 @@ public class UserServiceImpl implements UserService {
         }
         String email = authentication.getName();
         return userRepository.findByEmail(email)
-            .orElseThrow(() -> new IllegalArgumentException("Authenticated user not found: " + email));
+                .orElseThrow(() -> new IllegalArgumentException("Authenticated user not found: " + email));
     }
 }
