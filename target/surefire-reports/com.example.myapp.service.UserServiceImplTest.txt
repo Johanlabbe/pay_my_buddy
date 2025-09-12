@@ -1,0 +1,28 @@
+-------------------------------------------------------------------------------
+Test set: com.example.myapp.service.UserServiceImplTest
+-------------------------------------------------------------------------------
+Tests run: 9, Failures: 1, Errors: 1, Skipped: 0, Time elapsed: 0.108 s <<< FAILURE! - in com.example.myapp.service.UserServiceImplTest
+com.example.myapp.service.UserServiceImplTest.getCurrentUser_shouldReturnUser_whenAuthenticated  Time elapsed: 0.011 s  <<< ERROR!
+java.lang.IllegalStateException: Utilisateur non authentifié.
+	at com.example.myapp.service.UserServiceImpl.getCurrentUser(UserServiceImpl.java:59)
+	at com.example.myapp.service.UserServiceImplTest.getCurrentUser_shouldReturnUser_whenAuthenticated(UserServiceImplTest.java:190)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+
+com.example.myapp.service.UserServiceImplTest.getCurrentUser_shouldFail_whenUserNotFound  Time elapsed: 0.006 s  <<< FAILURE!
+org.opentest4j.AssertionFailedError: Unexpected exception type thrown, expected: <java.lang.IllegalArgumentException> but was: <java.lang.IllegalStateException>
+	at org.junit.jupiter.api.AssertionFailureBuilder.build(AssertionFailureBuilder.java:151)
+	at org.junit.jupiter.api.AssertThrows.assertThrows(AssertThrows.java:67)
+	at org.junit.jupiter.api.AssertThrows.assertThrows(AssertThrows.java:35)
+	at org.junit.jupiter.api.Assertions.assertThrows(Assertions.java:3083)
+	at com.example.myapp.service.UserServiceImplTest.getCurrentUser_shouldFail_whenUserNotFound(UserServiceImplTest.java:206)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+Caused by: java.lang.IllegalStateException: Utilisateur non authentifié.
+	at com.example.myapp.service.UserServiceImpl.getCurrentUser(UserServiceImpl.java:59)
+	at com.example.myapp.service.UserServiceImplTest.lambda$getCurrentUser_shouldFail_whenUserNotFound$7(UserServiceImplTest.java:206)
+	at org.junit.jupiter.api.AssertThrows.assertThrows(AssertThrows.java:53)
+	... 6 more
+

@@ -2,6 +2,7 @@ C:\Users\Johan Labbe\Desktop\workspace\Java\OC\pay_my_buddy\src\main\java\com\ex
 C:\Users\Johan Labbe\Desktop\workspace\Java\OC\pay_my_buddy\src\main\java\com\example\myapp\service\UserServiceImpl.java
 C:\Users\Johan Labbe\Desktop\workspace\Java\OC\pay_my_buddy\src\main\java\com\example\myapp\entity\Invoice.java
 C:\Users\Johan Labbe\Desktop\workspace\Java\OC\pay_my_buddy\src\main\java\com\example\myapp\controller\TransferController.java
+C:\Users\Johan Labbe\Desktop\workspace\Java\OC\pay_my_buddy\src\main\java\com\example\myapp\dto\UpdateProfileDTO.java
 C:\Users\Johan Labbe\Desktop\workspace\Java\OC\pay_my_buddy\src\main\java\com\example\myapp\entity\User.java
 C:\Users\Johan Labbe\Desktop\workspace\Java\OC\pay_my_buddy\src\main\java\com\example\myapp\controller\TransactionController.java
 C:\Users\Johan Labbe\Desktop\workspace\Java\OC\pay_my_buddy\src\main\java\com\example\myapp\entity\UserConnection.java
@@ -17,7 +18,9 @@ C:\Users\Johan Labbe\Desktop\workspace\Java\OC\pay_my_buddy\src\main\java\com\ex
 C:\Users\Johan Labbe\Desktop\workspace\Java\OC\pay_my_buddy\src\main\java\com\example\myapp\service\ConnectionService.java
 C:\Users\Johan Labbe\Desktop\workspace\Java\OC\pay_my_buddy\src\main\java\com\example\myapp\service\ConnectionServiceImpl.java
 C:\Users\Johan Labbe\Desktop\workspace\Java\OC\pay_my_buddy\src\main\java\com\example\myapp\service\TransactionService.java
+C:\Users\Johan Labbe\Desktop\workspace\Java\OC\pay_my_buddy\src\main\java\com\example\myapp\controller\ProfileController.java
 C:\Users\Johan Labbe\Desktop\workspace\Java\OC\pay_my_buddy\src\main\java\com\example\myapp\security_config\SecurityConfig.java
+C:\Users\Johan Labbe\Desktop\workspace\Java\OC\pay_my_buddy\src\main\java\com\example\myapp\dto\ChangePasswordDTO.java
 C:\Users\Johan Labbe\Desktop\workspace\Java\OC\pay_my_buddy\src\main\java\com\example\myapp\service\BillingService.java
 C:\Users\Johan Labbe\Desktop\workspace\Java\OC\pay_my_buddy\src\main\java\com\example\myapp\controller\ConnectionController.java
 C:\Users\Johan Labbe\Desktop\workspace\Java\OC\pay_my_buddy\src\main\java\com\example\myapp\dto\UserDTO.java
